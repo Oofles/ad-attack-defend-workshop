@@ -10,19 +10,35 @@ https://www.pluralsight.com/free
 
 ## Start the Lab
 
-Next, you need to browse to the lab itself, [Active Directory Sandbox](https://app.pluralsight.com/labs/detail/3942ee4b-8b01-4001-a731-c7b447e217c0/toc)
+1. Next, you need to browse to the lab itself, [Active Directory Sandbox](https://app.pluralsight.com/labs/detail/3942ee4b-8b01-4001-a731-c7b447e217c0/toc)
 
-Then click **Start Lab**
+2. Then click **Start Lab**
 
-Once the next page loads click **Start Environment**
+3. Once the next page loads click **Start Environment**
 
-It will take about 3-5 Minutes to load. 
+    > It will take about 3-5 Minutes to load. 
 
-While it is loading you can read the first challenge documentation that includes a link to a short video familiarizing yourself with the lab env.
+    > While it is loading you can read the first challenge documentation that includes a link to a short video familiarizing yourself with the lab env.
 
-When it is ready the button will turn green and say **open environment**. 
+4. When it is ready the button will turn green and say **open environment**. 
 
-You are now in the lab environment where will wil conduct all of our workshops.  However!  **ALL OF THE INSTRUCTIONS ARE IN THIS GITHUB NOT IN THE CHALLENGES**
+5. You are now in the lab environment where will wil conduct all of our workshops,   however:  
+
+**ALL OF THE INSTRUCTIONS ARE IN THIS GITHUB NOT IN THE CHALLENGES**
+
+## Finish the AD Setup
+
+Because of how this environment is being built, there is a race condition on endpoint restarts. In most instances, the AD Client endpoint (TWORIVERS) will not have restarted enough times.
+
+1. Log in to the "TWORIVERS" endpoint
+
+![](./connections-client.png)
+
+2. Check the rcount file, located at `C:\rcount` has a value of "3"
+
+![](./rcount.png)
+
+3. If it does, congratulations you environment is setup! If not, manually restart the machine and check again.
 
 ## Navigating the Lab
 
