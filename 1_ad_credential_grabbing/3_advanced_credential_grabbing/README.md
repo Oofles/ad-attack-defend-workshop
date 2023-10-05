@@ -27,7 +27,7 @@ Some examples of these techniques are what we will cover here and in the other a
 
 1. From the Lighteater (Attacker Box), RDP into the TWORIVERS (client) with the local administrator account.  
 
-    > `TWORIVERS\Administrator:Summerishere@2023!`
+    > `TWORIVERS\Administrator:Summertimeishere@2023!`
 
 2. Ensure windows defender is turned back on: `Set-MpPreference -DisableRealtimeMonitoring 0`
 2. Open an Administrative powershell terminal.
@@ -65,7 +65,7 @@ This is detected and the proc.dump file is deleted.  Oh no!
 
 Let's talk about what else we should do.
 
-## Create Domain Save with 
+## Extra - Create Domain Save with WMIC
 https://www.microsoft.com/en-us/security/blog/2023/05/24/volt-typhoon-targets-us-critical-infrastructure-with-living-off-the-land-techniques/
 
 If you then end up with domain creds, one next step can be to grab the credentials from the entire domain of course! There are a number of ways that have been flagged to essentially steal the ntds.dit file from the Domain Controller.
