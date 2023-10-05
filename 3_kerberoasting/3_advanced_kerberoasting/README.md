@@ -10,8 +10,8 @@ As you can imagine, even lowly Domain Users need to interact with file services,
 > **OPSEC NOTES**:
 > - You still need the domain user context, so proxying would require passing creds but is doable.
 > - Don't dump the results to a file, non custom tools like you just use do that by default, but this is quickly evades
-> - This does require network authentication, so there is a double hope issue with doing it remotely without passing creds
-> - If this is done in custom runspace, very difficult to detect
+> - This does require network authentication, so there is a double-hop issue with doing it remotely without passing creds
+> - If this is done in a custom runspace, it's very difficult to detect
 
 
 1. Login from LIGHTEATER to TWORIVERS using RDP and the following user level credentials:  

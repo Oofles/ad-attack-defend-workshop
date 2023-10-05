@@ -1,6 +1,6 @@
 # Active Directory Enumeration
 
-TAs typically enumerate a victim's AD environment in order to learn more about the environment. Enumeration can provide details concerning the network while also identifying vulnerabilities within the environment. Essentially, enumeration can help you understand where and what to attack. What systems are out there? What elevated accounts exist? Etc. etc.
+Threat Actors typically enumerate a victim's AD environment in order to learn more about the environment. Enumeration can provide details concerning the network while also identifying vulnerabilities within the environment. Essentially, enumeration can help you understand where and what to attack. What systems are out there? What elevated accounts exist? Etc. 
 
 ## [Common Active Directory Enumeration Techniques](./1_common_enumeration/README.md)
 

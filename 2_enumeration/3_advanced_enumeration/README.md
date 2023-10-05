@@ -3,13 +3,11 @@
 We are going to use the [adsiSearcher] Type Accelerator
 https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_type_accelerators?view=powershell-7.3
 
-Type accelerators are aliases for .NET framework classes. They allow you to access specific .NET framework classes without having to explicitly type the entire class name.
-
-- on every machine with no additional installs required
+Type accelerators are aliases for .NET framework classes. They allow you to access specific .NET framework classes without having to explicitly type the entire class name. -- on every machine with no additional installs required!
 
 In addition, this is not logged in the process command line logging or by sysmon.
 
-This can all be done as a domain user, no need for elevated privleges.  To prove that point we will use the felixb user who does not have any sort of admin groups assigned.
+This can all be done as a domain user, no need for elevated privileges.  To prove that point we will use the felixb user who does not have any admin groups assigned.
 
 > **OPSEC NOTES**:
 > - Not executing under powershell, powershell_ise can be used, we will explore a cool way this can be done.
@@ -22,46 +20,50 @@ This can all be done as a domain user, no need for elevated privleges.  To prove
 
 
 
-1. Remote from LIGHTEATER to the TWORIVERS.wheel.co machine using the wheel\felixb | pw: P@ssW0rD!  acount.  This only works if you are in the security context of a domain user.  If you have system, you can also inject into a domain users process to assume that context, or impersonate.
+1. Remote from LIGHTEATER to the TWORIVERS.wheel.co machine using the `wheel\felixb | pw: P@ssW0rD!`  acount.  This only works if you are in the security context of a domain user.  If you have system, you can also inject into a domain users process to assume that context, or impersonate.
    
 2. Use the start menu to open powershell_ise.exe we are going to explore a slightly different way to execute our commands using powershell_ise.  We opened it this way because it will show a different parent process, instead of launching it from cmd.exe or powershell.exe which is commonly inspected further by EDR.
 
 ![Open ISE](./powershell_ise.png)
 
-3. In the powershell console, get the current domain with a DOTNET Class `[System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()` this avoids things like nltest, which are indicators that detections key in on. 
+3. In the powershell console, get the current domain with the following .NET Class to avoid using things like nltest, which are indicators that detections key in on. 
 
-4. Now use the $psise context to run commands in new tabs, each of which are completely separate powershell runspaces.
+    `[System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain()` 
 
-```powershell
-$psISE.PowerShellTabs.Add()
-$psISE.PowerShellTabs.SetSelectedPowerShellTab($psISE.PowerShellTabs[0])
-$users = $psISE.PowerShellTabs[1].InvokeSynchronous("([adsisearcher]`'(&(objectCategory=user))`').findall()")
-$users
-$users | convertto-json
-```
+
+
+4. Now use the `$psise` context to run commands in new tabs, each of which are completely separate powershell runspaces.
+
+    ```powershell
+    $psISE.PowerShellTabs.Add()
+    $psISE.PowerShellTabs.SetSelectedPowerShellTab($psISE.PowerShellTabs[0])
+    $users = $psISE.PowerShellTabs[1].InvokeSynchronous("([adsisearcher]`'(&(objectCategory=user))`').findall()")
+    $users
+    $users | convertto-json
+    ```
 
 4. Do the same for computer objects.
-```powershell
-$psISE.PowerShellTabs.Add()
-$psISE.PowerShellTabs.SetSelectedPowerShellTab($psISE.PowerShellTabs[0])
-$computers = $psISE.PowerShellTabs[2].InvokeSynchronous("([adsisearcher]`'(&(objectCategory=Computer))`').findall()")
-$computers
-```
+    ```powershell
+    $psISE.PowerShellTabs.Add()
+    $psISE.PowerShellTabs.SetSelectedPowerShellTab($psISE.PowerShellTabs[0])
+    $computers = $psISE.PowerShellTabs[2].InvokeSynchronous("([adsisearcher]`'(&(objectCategory=Computer))`').findall()")
+    $computers
+    ```
 
 5. Do the same for users with service principal names objects.
-```powershell
-$psISE.PowerShellTabs.Add()
-$psISE.PowerShellTabs.SetSelectedPowerShellTab($psISE.PowerShellTabs[0])
-$servicepns = $psISE.PowerShellTabs[3].InvokeSynchronous("([adsisearcher]`'serviceprincipalname=*`').findall().properties.serviceprincipalname")
-$servicepns
-```
+    ```powershell
+    $psISE.PowerShellTabs.Add()
+    $psISE.PowerShellTabs.SetSelectedPowerShellTab($psISE.PowerShellTabs[0])
+    $servicepns = $psISE.PowerShellTabs[3].InvokeSynchronous("([adsisearcher]`'serviceprincipalname=*`').findall().properties.serviceprincipalname")
+    $servicepns
+    ```
 6. Do the same to get the full information for all of those users.
-```powershell
-$psISE.PowerShellTabs.Add()
-$psISE.PowerShellTabs.SetSelectedPowerShellTab($psISE.PowerShellTabs[0])
-$servicepnsdata = $psISE.PowerShellTabs[4].InvokeSynchronous("(([adsisearcher]`'serviceprincipalname=*`'`).findall().properties)")
-$servicepnsdata
-```
+    ```powershell
+    $psISE.PowerShellTabs.Add()
+    $psISE.PowerShellTabs.SetSelectedPowerShellTab($psISE.PowerShellTabs[0])
+    $servicepnsdata = $psISE.PowerShellTabs[4].InvokeSynchronous("(([adsisearcher]`'serviceprincipalname=*`'`).findall().properties)")
+    $servicepnsdata
+    ```
 
 ![PS AD Enumeration](./powershell-enum.png)
 

@@ -46,12 +46,12 @@ $event4104 | where {$_.message -like "*PowerView.ps1*"}
 
 3. But what if the name of the script file has been changed? Let's filter for any instances of the phrase "PowerView" and see what we get.
 ```powershell
-$event4104 | where {$_.message -like "PowerView*"} | findstr PowerView
+$event4104 | where {$_.message -like "*PowerView*"} | select -ExpandProperty Message | findstr PowerView
 ```
 
 4. And finally, let's filter out any of the "Path" results
 ```powershell
-$event4104 | where {$_.message -like "PowerView*"} | findstr PowerView | findstr /V Path
+$event4104 | where {$_.message -like "*PowerView*"} | select -ExpandProperty Message | findstr PowerView | findstr /V Path
 ```
 
 | Analysis: One of the simplest things an adversary may change is the filename. Adversaries may also make basic modifications like adding comments into the code to change the hash value. These simple obfuscation techniques can be defeated by looking for other indicators. 
